@@ -5,6 +5,7 @@ import urlparse
 
 from gevent.pywsgi import WSGIHandler
 from socketio import transports
+from werkzeug.urls import url_decode
 
 class SocketIOHandler(WSGIHandler):
     RE_REQUEST_URL = re.compile(r"""
@@ -56,7 +57,9 @@ class SocketIOHandler(WSGIHandler):
         if tokens["resource"] != self.server.resource:
             self.log_error("socket.io URL mismatch")
         else:
-            socket = self.server.get_socket()
+            args = url_decode(self.environ.get('QUERY_STRING',''))
+            sid = str(args.get("sid",''))
+            socket = self.server.create_socket(sessid=sid)
             data = "%s:%s:%s:%s" % (socket.sessid,
                                     self.config['heartbeat_timeout'] or '',
                                     self.config['close_timeout'] or '',

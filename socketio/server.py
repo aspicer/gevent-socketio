@@ -123,6 +123,19 @@ class SocketIOServer(WSGIServer):
         handler = self.handler_class(self.config, socket, address, self)
         handler.handle()
 
+    def create_socket(self, sessid=''):
+        """Return an existing or new client Socket."""
+
+        socket = self.sockets.get(sessid)
+
+        if socket is None:
+            socket = Socket(self, self.config, sessid=sessid)
+            self.sockets[socket.sessid] = socket
+        else:
+            socket.incr_hits()
+
+        return socket
+
     def get_socket(self, sessid=''):
         """Return an existing or new client Socket."""
 

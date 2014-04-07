@@ -74,9 +74,9 @@ class Socket(object):
     json_loads = staticmethod(default_json_loads)
     json_dumps = staticmethod(default_json_dumps)
 
-    def __init__(self, server, config, error_handler=None):
+    def __init__(self, server, config, error_handler=None, sessid=''):
         self.server = weakref.proxy(server)
-        self.sessid = str(random.random())[2:]
+        self.sessid = sessid if sessid else str(random.random())[2:]
         self.session = {}  # the session dict, for general developer usage
         self.client_queue = Queue()  # queue for messages to client
         self.server_queue = Queue()  # queue for messages to server
